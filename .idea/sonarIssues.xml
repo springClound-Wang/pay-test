@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="issues">
+    <option name="index">
+      <map>
+        <entry key="$PROJECT_DIR$/wish-pay-core/wish-pay-ali/pom.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/wish-pay-core/wish-pay-ali/src/main/java/com/wish/pay/ali/service/AliPayServiceImpl.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/wish-pay-core/wish-pay-common/pom.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/wish-pay-web/src/main/java/com/wish/pay/web/controller/PayController.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/wish-pay-web/src/main/resources/application-dev.properties">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/wish-pay-web/src/main/resources/application-prod.properties">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/wish-pay-web/src/main/resources/application-test.properties">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/wish-pay-web/src/main/resources/application.properties">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/wish-pay-web/src/main/resources/templates/index.html">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Downloads/springboot-baiduOcr-structurization-master/ocr-test/src/main/java/com/zjw/ocr/model/BillInfo.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="C:/wzz/project/yigong-bangbang/src/main/java/com/jeesite/modules/api/login/WeChatLoginController.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

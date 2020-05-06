@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="wish-pay-ali" />
+        <module name="wish-pay-wx" />
+        <module name="wish-pay-web" />
+        <module name="wish-pay-common" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="wish-pay" target="1.5" />
+      <module name="wish-pay-ali" target="1.7" />
+      <module name="wish-pay-common" target="1.7" />
+      <module name="wish-pay-core" target="1.5" />
+      <module name="wish-pay-web" target="1.7" />
+      <module name="wish-pay-wx" target="1.7" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

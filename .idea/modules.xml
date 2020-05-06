@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/wish-pay.iml" filepath="$PROJECT_DIR$/wish-pay.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wish-pay-core/wish-pay-ali/wish-pay-ali.iml" filepath="$PROJECT_DIR$/wish-pay-core/wish-pay-ali/wish-pay-ali.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wish-pay-core/wish-pay-common/wish-pay-common.iml" filepath="$PROJECT_DIR$/wish-pay-core/wish-pay-common/wish-pay-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wish-pay-core/wish-pay-core.iml" filepath="$PROJECT_DIR$/wish-pay-core/wish-pay-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wish-pay-web/wish-pay-web.iml" filepath="$PROJECT_DIR$/wish-pay-web/wish-pay-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wish-pay-core/wish-pay-wx/wish-pay-wx.iml" filepath="$PROJECT_DIR$/wish-pay-core/wish-pay-wx/wish-pay-wx.iml" />
+    </modules>
+  </component>
+</project>
