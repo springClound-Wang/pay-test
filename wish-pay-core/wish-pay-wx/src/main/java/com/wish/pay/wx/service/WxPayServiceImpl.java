@@ -100,7 +100,7 @@ public class WxPayServiceImpl implements PayService {
     public TradeResult createTradeOrder(TradePrecreate trade, String notifyResultUrl) throws Exception {
         TradeResult result = new TradeResult();
         String unifiedorderUrl = config.getPreUrl() + WxPayInterface.WxpayTrade_Unifiedorder.getMethod();
-        logger.info("微信下单地址是：", unifiedorderUrl);
+        logger.info("微信下单地址是：{}", unifiedorderUrl);
         //组装xml
         //时间
         long start = System.currentTimeMillis();
