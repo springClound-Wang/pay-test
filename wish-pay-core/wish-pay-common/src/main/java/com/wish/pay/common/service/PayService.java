@@ -92,5 +92,11 @@ public interface PayService {
      */
     public Map<String, String> notifyResult(HttpServletRequest request, String AliPayPublicKey);
 
-
+    /**
+     * H5支付
+     * @param tradePrecreate
+     * @return
+     * @throws Exception
+     */
+  //  public TradeResult createWapPayOrder(TradePrecreate tradePrecreate) throws Exception;
 }

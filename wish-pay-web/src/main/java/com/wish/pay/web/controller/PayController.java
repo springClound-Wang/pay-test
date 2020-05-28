@@ -1,9 +1,18 @@
 package com.wish.pay.web.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
+import com.alipay.api.domain.PreOrderResult;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayTradePrecreateRequest;
+import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
+import com.alipay.api.response.AlipayTradePrecreateResponse;
+import com.alipay.api.response.AlipayTradeWapPayResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.wish.pay.ali.common.AliPayConstants;
 import com.wish.pay.ali.common.SceneEnum;
 import com.wish.pay.ali.service.AliPayServiceImpl;
 import com.wish.pay.common.model.*;
@@ -11,14 +20,12 @@ import com.wish.pay.common.model.result.RefundResult;
 import com.wish.pay.common.model.result.TradeQueryResult;
 import com.wish.pay.common.model.result.TradeResult;
 import com.wish.pay.common.utils.BeanMapper;
+import com.wish.pay.common.utils.JsonUtils;
 import com.wish.pay.common.utils.TradeStatusEnum;
 import com.wish.pay.common.utils.ZxingUtils;
 import com.wish.pay.common.utils.validator.ValidationResult;
 import com.wish.pay.common.utils.validator.ValidationUtils;
-import com.wish.pay.web.bean.CreatePayBean;
-import com.wish.pay.web.bean.QueryRefundTrade;
-import com.wish.pay.web.bean.QueryTradeStatus;
-import com.wish.pay.web.bean.RefundTrade;
+import com.wish.pay.web.bean.*;
 import com.wish.pay.web.dao.entity.TradeOrder;
 import com.wish.pay.web.exception.BusinessException;
 import com.wish.pay.web.service.ITradeOrderService;
@@ -33,14 +40,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.util.*;
 
 
 @Controller
@@ -64,8 +73,7 @@ public class PayController {
     String AliPayPublicKey;
 
     @PostMapping("/test1")
-    @ResponseBody
-    public  String test1(CreatePayBean createPay) throws Exception{
+    public  ModelAndView test1(CreatePayBean createPay,HttpServletResponse response) throws Exception{
         TradeOrder order = new TradeOrder();
         BeanMapper.copy(createPay, order);
         //2.插入订单记录
@@ -79,8 +87,15 @@ public class PayController {
             tradePrecreate.setStoreId("test_001");
             tradePrecreate.setTotalAmount(order.getAmount().toString());
             tradePrecreate.setTimeoutExpress("90m");
-            TradeResult tradeResult = aliPayService.createTradeOrder(tradePrecreate, ALiPayNotifyResultUrl);
-            return tradeResult.getQrCode();
+            String form =aliPayService.test1(ALiPayNotifyResultUrl,tradePrecreate);
+            /*ModelAndView modelAndView=new ModelAndView("form");
+            modelAndView.addObject("form",form);
+            return modelAndView;*/
+            response.setContentType("text/html;charset=utf-8");
+            response.setCharacterEncoding("utf-8");
+          Writer writer= response.getWriter();
+            writer.write(form);
+            writer.close();
         }
         return null;
     }
@@ -119,7 +134,9 @@ public class PayController {
             if (createPay.getPayWay().equalsIgnoreCase(PayTypeEnum.AliPay.getType())) {
                 tradeResult = aliPayService.createTradeOrder(tradePrecreate, ALiPayNotifyResultUrl);
             } else if (createPay.getPayWay().equalsIgnoreCase(PayTypeEnum.WxPay.getType())) {
-                tradeResult = wxPayService.createTradeOrder(tradePrecreate, ALiPayNotifyResultUrl);
+                int money = new BigDecimal(tradePrecreate.getTotalAmount()).multiply(new BigDecimal(100)).intValue();
+               // PreOrderResult placeOrder=  placeOrder("APP支付测试",tradePrecreate.getOutTradeNo(),money+"");
+                tradeResult = wxPayService.createTradeOrder(tradePrecreate, WXPayNotifyResultUrl);
             }
             if (tradeResult != null && tradeResult.isTradeSuccess()) {//支付成功
                 BufferedImage bufferedImage = ZxingUtils.writeInfoToJpgBuffImg(tradeResult.getQrCode(), 400, 400);
@@ -131,7 +148,51 @@ public class PayController {
         return null;
     }
 
+    public PreOrderResult placeOrder(String body, String out_trade_no, String total_fee) throws Exception {
+        // 生成预付单对象
+        PreOrder o = new PreOrder();
+        // 生成随机字符串
+        String nonce_str = UUID.randomUUID().toString().trim().replaceAll("-", "");
+        o.setAppid("wx398e724414a273cd");
+        o.setBody(body);
+        o.setMch_id("1590189441");
+        o.setNotify_url("http://www.bodahuyu.cn");
+        o.setOut_trade_no(out_trade_no);
+        // 判断有没有输入订单总金额，没有输入默认1分钱
+        if (total_fee != null && !total_fee.equals("")) {
+            o.setTotal_fee(Integer.parseInt(total_fee));
+        } else {
+            o.setTotal_fee(1);
+        }
+        o.setNonce_str(nonce_str);
+        o.setTrade_type("NATIVE");
+        o.setSpbill_create_ip("127.0.0.1");
+        SortedMap<Object, Object> p = new TreeMap<Object, Object>();
+        p.put("appid", "wx398e724414a273cd");
+        p.put("mch_id", "1590189441");
+        p.put("body", body);
+        p.put("nonce_str", nonce_str);
+        p.put("out_trade_no", out_trade_no);
+        p.put("total_fee", total_fee);
+        p.put("spbill_create_ip","127.0.0.1");
+        p.put("notify_url", "http://www.bodahuyu.cn");
+        p.put("trade_type", "NATIVE");
+        // 获得签名
+        String sign = Sign.createSign("utf-8", p,"MIIEvQIBADANBgkqhkiG9w0BAQEFAASC");
+        o.setSign(sign);
+        // Object转换为XML
+        String xml = XmlUtil.object2Xml(o, PreOrder.class);
+        System.out.println("-===="+xml);
+        // 统一下单地址
+        String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+        // 调用微信统一下单地址
+        String returnXml = HttpUtil.sendPost(url, xml);
 
+        // XML转换为Object
+        PreOrderResult preOrderResult = (PreOrderResult) XmlUtil.xml2Object(returnXml, PreOrderResult.class);
+        System.out.println("-===="+ JSON.toJSONString(preOrderResult));
+        return preOrderResult;
+    }
     /**
      * 查询交易状态
      *

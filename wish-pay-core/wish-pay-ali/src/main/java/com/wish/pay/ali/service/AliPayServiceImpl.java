@@ -40,21 +40,38 @@ public class AliPayServiceImpl implements PayService {
     public AliPayServiceImpl(AlipayClient alipayClient) {
         this.alipayClient = alipayClient;
     }
-    public  String test1(String ALiPayNotifyResultUrl) throws Exception{
-        AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
+        public  String test1(String ALiPayNotifyResultUrl,TradePrecreate tradePrecreate) throws Exception{
+        ValidationResult validationResult = ValidationUtils.validateEntity(tradePrecreate);
+        if (validationResult.isHasErrors()) {
+            logger.error("[createTradeOrder] 创建订单参照验证错误", validationResult.getErrorMsg().toString());
+            throw new Exception(validationResult.getErrorMsg().toString());
+        }
+        //阿里预下单接口
+        AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();
 
-        request.setNotifyUrl(ALiPayNotifyResultUrl);
+        //自动构建json
+        String bizJson = JsonUtils.toJson(tradePrecreate);
+        System.out.println(bizJson);
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(ALiPayNotifyResultUrl)) {
+            alipayRequest.setNotifyUrl(ALiPayNotifyResultUrl);//配置的回调通知信息
+        }
+        alipayRequest.setBizContent(bizJson);
 
-        Map<String,Object> requestParams = new HashMap<>(16);
-        requestParams.put("out_trade_no", "1");
-        requestParams.put("product_code", "1");
-        requestParams.put("total_amount", 0.01);
-        requestParams.put("subject", "购买宝贝");
-        ObjectMapper mapper = new ObjectMapper();
+        TradeResult result = new TradeResult();
+        try {
+            AlipayTradeWapPayResponse precreateResponse = alipayClient.pageExecute(alipayRequest);
+            logger.info("[createTradeOrder]返回结果:", precreateResponse.getBody());
+            System.out.println(precreateResponse.getBody());
 
-        request.setBizContent(mapper.writeValueAsString(requestParams));
-        AlipayTradePagePayResponse response = alipayClient.pageExecute(request);
-        return response.getBody();
+
+             return precreateResponse.getBody();
+
+
+        } catch (AlipayApiException e) {
+            result.setTradeStatus(Contains.TradeStatus.UNKNOWN);
+            logger.error("[createTradeOrder]提交订单AlipayApiException异常：", e);
+        }
+        return  "网络错误";
     }
     /**
      * 创建订单
@@ -82,6 +99,7 @@ public class AliPayServiceImpl implements PayService {
         }
         //阿里预下单接口
         AlipayTradePrecreateRequest precreateReques = new AlipayTradePrecreateRequest();
+
         //自动构建json
         String bizJson = JsonUtils.toJson(tradePrecreate);
         System.out.println(bizJson);
